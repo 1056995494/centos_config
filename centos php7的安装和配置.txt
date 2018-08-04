@@ -1,0 +1,64 @@
+安装apache
+yum install httpd
+安装php7
+1. 更新yum安装包
+CentOS 7.x
+rpm -Uvh https://mirror.webtatic.com/yum/el7/epel-release.rpm
+rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
+CentOS 6.x
+rpm -Uvh http://mirror.webtatic.com/yum/el6/latest.rpm
+CentOS 5.x
+rpm -Uvh http://mirror.webtatic.com/yum/el5/latest.rpm
+2. 通过云进行php和其他组件的安装
+yum install php70w.x86_64 php70w-cli.x86_64 php70w-common.x86_64 php70w-gd.x86_64 php70w-ldap.x86_64 php70w-mbstring.x86_64 php70w-mcrypt.x86_64 php70w-mysql.x86_64 php70w-pdo.x86_64
+
+
+
+
+使用其他的php7时此时可能会发现浏览器打开test.php无法解析，且会自动下载
+
+Apache版本2.4.6
+
+PHP 版本7.0.27
+
+
+首先确保php和apache已经正确安装
+
+检查/etc/httpd/conf.modules.d/10-php.conf该文件是否存在，若apache页面只提示下载的话，该文件一般都不存在
+
+检查/usr/lib64/httpd/modules/libphp7.so和/usr/lib64/httpd/modules/libphp7-zts.so是否存在
+
+若上面三个文件都不存在，请拷贝上述三个文件至对应的目录，并赋755权限（很重要，影响到扩展的安装），可以从该路径下载：https://download.csdn.net/download/duoluocongci/10339427
+
+在apache的配置文件中增加下面信息：
+
+1)
+
+<IfModule dir_module>
+
+    DirectoryIndex index.php index.html
+</IfModule>
+
+2)
+
+AddType application/x-compress .Z
+AddType application/x-gzip .gz .tgz
+
+AddType application/x-httpd-php .php
+
+下面两个前面的#去掉
+AddEncoding x-compress .z
+AddEncoding x-gzip .gz .tgz
+
+重启apache不报错，页面正常解析
+
+mysql安装
+安装完成却发现Myserver安装缺失，在网上找原因，原来是因为CentOS 7上把MySQL从默认软件列表中移除了，用MariaDB来代替，所以这导致我们必须要去官网上进行下载，找到链接，用wget打开：
+
+a: #wget http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm 
+
+b：rpm -ivh mysql-community-release-el7-5.noarch.rpm
+
+c.两次进行yum -y install mysql mysql-server mysql-devel，安装成功。
+
+mysql 使用update user set host='%' where user='root'; 增加权限时 会发生意外情况 mysql数据库丢失
